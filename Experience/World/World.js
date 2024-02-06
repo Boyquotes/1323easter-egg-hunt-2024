@@ -11,7 +11,6 @@ export default class World extends EventEmitter {
         this.resources = this.experience.resources;
 
         this.resources.on("ready", () => {
-            console.log("bro");
             this.environment = new Environment();
             this.office = new Office();
             this.emit("worldready");

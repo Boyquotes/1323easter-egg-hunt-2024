@@ -10,11 +10,11 @@ export default class Environment {
     }
 
     setEnvironment() {
-        this.scene.background = new THREE.Color("#F3F3F3");
+        this.scene.background = this.resources.items.hdrBackground;
 
-        // this.environmentMap = this.resources.items.blenderHDR;
-        // this.environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-        // this.scene.environment = this.environmentMap;
+        this.environmentMap = this.resources.items.hdrBackground;
+        this.environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+        this.scene.environment = this.environmentMap;
     }
 
     update() {}

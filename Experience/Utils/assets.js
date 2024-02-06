@@ -22,6 +22,11 @@ export default [
                     type: "imageTexture",
                     path: "/textures/ship_texture.webp",
                 },
+                {
+                    name: "hdrBackground",
+                    type: "hdrTexture",
+                    path: "/textures/park.hdr",
+                },
             ],
         },
     },

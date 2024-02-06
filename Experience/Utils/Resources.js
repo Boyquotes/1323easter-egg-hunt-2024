@@ -33,7 +33,7 @@ export default class Resources extends EventEmitter {
                 this.loaders.cubeTextureLoader.load(asset.path, (file) => {
                     this.singleAssetLoaded(asset, file);
                 });
-            } else if (asset.type === "hdr") {
+            } else if (asset.type === "hdrTexture") {
                 this.loaders.rgbeLoader.load(asset.path, (file) => {
                     this.singleAssetLoaded(asset, file);
                 });

@@ -24,8 +24,22 @@ export default class Office {
             console.log(child);
 
             if (child.name === "blue_glass") {
+                child.material = new THREE.MeshPhysicalMaterial({});
+                child.material.roughness = 0;
+                child.material.color.set(0x95caff);
+                child.material.ior = 1.5;
+                child.material.transmission = 1;
+                child.material.opacity = 1;
+                child.side = THREE.DoubleSide;
             }
             if (child.name === "clear_glass") {
+                child.material = new THREE.MeshPhysicalMaterial({});
+                child.material.roughness = 0;
+                child.material.color.set(0xdfe5f5);
+                child.material.ior = 1.5;
+                child.material.transmission = 1;
+                child.material.opacity = 1;
+                child.side = THREE.DoubleSide;
             }
             if (child.name === "ship_baked") {
                 this.resources.items.ship_texture.flipY = false;
@@ -49,6 +63,7 @@ export default class Office {
                     THREE.SRGBColorSpace;
                 child.material = new THREE.MeshBasicMaterial({
                     map: this.resources.items.building_texture,
+                    side: THREE.DoubleSide,
                 });
             }
         });
