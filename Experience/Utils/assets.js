@@ -8,6 +8,11 @@ export default [
                     path: "/models/office.glb",
                 },
                 {
+                    name: "outside",
+                    type: "glbModel",
+                    path: "/models/outside.glb",
+                },
+                {
                     name: "building_texture",
                     type: "imageTexture",
                     path: "/textures/building_texture.webp",
@@ -21,6 +26,16 @@ export default [
                     name: "ship_texture",
                     type: "imageTexture",
                     path: "/textures/ship_texture.webp",
+                },
+                {
+                    name: "sign_texture",
+                    type: "imageTexture",
+                    path: "/textures/sign_texture.webp",
+                },
+                {
+                    name: "ground_texture",
+                    type: "imageTexture",
+                    path: "/textures/ground_texture.webp",
                 },
                 {
                     name: "hdrBackground",

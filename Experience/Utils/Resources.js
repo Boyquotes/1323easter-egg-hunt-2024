@@ -18,7 +18,6 @@ export default class Resources extends EventEmitter {
     startLoading() {
         this.loaded = 0;
         this.queue = this.assets[0][this.location].assets.length;
-        console.log(this.queue);
 
         for (const asset of this.assets[0][this.location].assets) {
             if (asset.type === "glbModel") {

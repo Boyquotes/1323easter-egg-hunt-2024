@@ -9,7 +9,7 @@ export default class Camera {
         this.scene = this.experience.scene;
         this.canvas = this.experience.canvas;
         this.params = {
-            fov: 75,
+            fov: 45,
             aspect: this.sizes.aspect,
             near: 0.001,
             far: 1000,
@@ -28,7 +28,7 @@ export default class Camera {
         );
         this.scene.add(this.perspectiveCamera);
 
-        this.perspectiveCamera.position.set(-8, 7, 1, 11.41);
+        this.perspectiveCamera.position.set(-32, 7.69, 8.4);
     }
 
     setOrbitControls() {
@@ -42,8 +42,6 @@ export default class Camera {
     }
 
     update() {
-        // console.log(this.perspectiveCamera.rotation);
-        // console.log(this.perspectiveCamera.position);
         if (this.controls) this.controls.update();
     }
 }

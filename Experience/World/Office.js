@@ -6,13 +6,6 @@ export default class Office {
         this.experience = new Experience();
         this.scene = this.experience.scene;
         this.resources = this.experience.resources;
-        this.time = this.experience.time;
-
-        this.lerp = {
-            current: 0,
-            target: 0,
-            ease: 0.1,
-        };
 
         this.setModel();
     }
@@ -21,8 +14,6 @@ export default class Office {
         this.office = this.resources.items.office.scene;
 
         this.office.traverse((child) => {
-            console.log(child);
-
             if (child.name === "blue_glass") {
                 child.material = new THREE.MeshPhysicalMaterial({});
                 child.material.roughness = 0;
@@ -70,8 +61,4 @@ export default class Office {
 
         this.scene.add(this.office);
     }
-
-    resize() {}
-
-    update() {}
 }

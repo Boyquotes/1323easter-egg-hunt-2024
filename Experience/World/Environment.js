@@ -16,6 +16,4 @@ export default class Environment {
         this.environmentMap.mapping = THREE.EquirectangularReflectionMapping;
         this.scene.environment = this.environmentMap;
     }
-
-    update() {}
 }
