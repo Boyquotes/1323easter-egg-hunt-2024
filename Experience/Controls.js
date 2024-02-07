@@ -90,10 +90,12 @@ export default class Controls {
             this.camera.controls.enablePan = false;
             this.camera.controls.enableRotate = false;
             this.camera.controls.enableZoom = false;
+
             GSAP.to(this.sideBar, {
                 x: "0%",
                 ease: "power4.inOut", // Easing function
             });
+
             GSAP.to(this.camera.controls.target, {
                 x: 0.54,
                 y: 2.77,
