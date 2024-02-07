@@ -65,7 +65,13 @@ export default class Controls {
         window.addEventListener("click", this.onClick);
 
         this.closeButton.addEventListener("click", () => {
-            this.sideBar.classList.add("hidden");
+            GSAP.to(this.sideBar, {
+                x: "-100%",
+                ease: "power4.inOut", // Easing function
+                onComplete: () => {
+                    this.sideBar.classList.add("hidden");
+                },
+            });
         });
     }
 
@@ -84,6 +90,10 @@ export default class Controls {
             this.camera.controls.enablePan = false;
             this.camera.controls.enableRotate = false;
             this.camera.controls.enableZoom = false;
+            GSAP.to(this.sideBar, {
+                x: "0%",
+                ease: "power4.inOut", // Easing function
+            });
             GSAP.to(this.camera.controls.target, {
                 x: 0.54,
                 y: 2.77,

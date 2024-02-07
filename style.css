@@ -37,6 +37,7 @@ body {
     overflow: hidden;
     position: relative;
     z-index: 10;
+    transform: translateX(-100%);
 }
 
 .side-bar-content {
@@ -46,6 +47,10 @@ body {
 .close-button {
     margin-bottom: 24px;
     cursor: pointer;
+}
+
+.close-button:hover {
+    color: #4288d8;
 }
 
 .side-bar-subheading {
