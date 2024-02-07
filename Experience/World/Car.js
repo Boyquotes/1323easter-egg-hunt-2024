@@ -19,6 +19,6 @@ export default class Car {
         if (this.car.position.x > 150) {
             this.car.position.x = 0;
         }
-        this.car.position.x += 0.15;
+        this.car.position.x += 0.155;
     }
 }
