@@ -13,6 +13,11 @@ export default [
                     path: "/models/outside.glb",
                 },
                 {
+                    name: "car",
+                    type: "glbModel",
+                    path: "/models/car.glb",
+                },
+                {
                     name: "building_texture",
                     type: "imageTexture",
                     path: "/textures/building_texture.webp",
@@ -37,6 +42,7 @@ export default [
                     type: "imageTexture",
                     path: "/textures/ground_texture.webp",
                 },
+
                 {
                     name: "hdrBackground",
                     type: "hdrTexture",
