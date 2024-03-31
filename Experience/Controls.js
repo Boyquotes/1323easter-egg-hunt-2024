@@ -113,7 +113,6 @@ export default class Player extends EventEmitter {
     onKeyDown = (e) => {
         if (document.pointerLockElement !== document.body) return;
 
-        console.log(e.code);
         if (e.code === "KeyW" || e.code === "ArrowUp") {
             this.actions.forward = true;
         }
