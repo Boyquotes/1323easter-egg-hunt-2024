@@ -49,6 +49,7 @@ export default class Player extends EventEmitter {
         window.addEventListener("click", () => {
             if (!this.flag) {
                 sound.play();
+                sound.loop = true;
                 this.flag = true;
             }
         });
@@ -112,16 +113,17 @@ export default class Player extends EventEmitter {
     onKeyDown = (e) => {
         if (document.pointerLockElement !== document.body) return;
 
-        if (e.code === "KeyW") {
+        console.log(e.code);
+        if (e.code === "KeyW" || e.code === "ArrowUp") {
             this.actions.forward = true;
         }
-        if (e.code === "KeyS") {
+        if (e.code === "KeyS" || e.code === "ArrowDown") {
             this.actions.backward = true;
         }
-        if (e.code === "KeyA") {
+        if (e.code === "KeyA" || e.code === "ArrowLeft") {
             this.actions.left = true;
         }
-        if (e.code === "KeyD") {
+        if (e.code === "KeyD" || e.code === "ArrowRight") {
             this.actions.right = true;
         }
 
@@ -137,16 +139,16 @@ export default class Player extends EventEmitter {
     onKeyUp = (e) => {
         if (document.pointerLockElement !== document.body) return;
 
-        if (e.code === "KeyW") {
+        if (e.code === "KeyW" || e.code === "ArrowUp") {
             this.actions.forward = false;
         }
-        if (e.code === "KeyS") {
+        if (e.code === "KeyS" || e.code === "ArrowDown") {
             this.actions.backward = false;
         }
-        if (e.code === "KeyA") {
+        if (e.code === "KeyA" || e.code === "ArrowLeft") {
             this.actions.left = false;
         }
-        if (e.code === "KeyD") {
+        if (e.code === "KeyD" || e.code === "ArrowRight") {
             this.actions.right = false;
         }
 
