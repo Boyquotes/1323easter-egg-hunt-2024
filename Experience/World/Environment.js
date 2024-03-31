@@ -10,10 +10,6 @@ export default class Environment {
     }
 
     setEnvironment() {
-        this.scene.background = this.resources.items.hdrBackground;
-
-        this.environmentMap = this.resources.items.hdrBackground;
-        this.environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-        this.scene.environment = this.environmentMap;
+        this.scene.background = this.resources.items.skyBoxTexture;
     }
 }

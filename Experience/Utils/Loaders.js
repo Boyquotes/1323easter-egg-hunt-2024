@@ -16,6 +16,7 @@ export default class Loaders {
 
         this.loaders.gltfLoader = new GLTFLoader();
         this.loaders.dracoLoader = new DRACOLoader();
+        this.loaders.audioLoader = new THREE.AudioLoader();
         this.loaders.dracoLoader.setDecoderPath("/draco/");
         this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader);
 

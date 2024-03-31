@@ -6,15 +6,18 @@ export default class Office {
         this.experience = new Experience();
         this.scene = this.experience.scene;
         this.resources = this.experience.resources;
+        this.octree = this.experience.world.octree;
 
         this.setModel();
+        this.setLandscapeCollider();
     }
 
     setModel() {
-        this.office = this.resources.items.office.scene;
+        this.full_model_easter = this.resources.items.full_model_easter.scene;
 
-        this.office.traverse((child) => {
-            if (child.name === "blue_glass") {
+        this.full_model_easter.traverse((child) => {
+            console.log(child);
+            if (child.name === "Red_Glass") {
                 child.material = new THREE.MeshPhysicalMaterial({});
                 child.material.roughness = 0;
                 child.material.color.set(0x95caff);
@@ -23,7 +26,7 @@ export default class Office {
                 child.material.opacity = 1;
                 child.side = THREE.DoubleSide;
             }
-            if (child.name === "clear_glass") {
+            if (child.name === "Black_Glass") {
                 child.material = new THREE.MeshPhysicalMaterial({});
                 child.material.roughness = 0;
                 child.material.color.set(0xdfe5f5);
@@ -32,33 +35,60 @@ export default class Office {
                 child.material.opacity = 1;
                 child.side = THREE.DoubleSide;
             }
-            if (child.name === "ship_baked") {
-                this.resources.items.ship_texture.flipY = false;
-                this.resources.items.ship_texture.colorSpace =
+            if (child.name === "Car_Baked") {
+                this.resources.items.car_baked.flipY = false;
+                this.resources.items.car_baked.colorSpace =
                     THREE.SRGBColorSpace;
                 child.material = new THREE.MeshBasicMaterial({
-                    map: this.resources.items.ship_texture,
+                    map: this.resources.items.car_baked,
                 });
             }
-            if (child.name === "extras_baked") {
-                this.resources.items.extras_texture.flipY = false;
-                this.resources.items.extras_texture.colorSpace =
+            if (child.name === "Platforms_Baked") {
+                this.resources.items.platforms_baked.flipY = false;
+                this.resources.items.platforms_baked.colorSpace =
                     THREE.SRGBColorSpace;
                 child.material = new THREE.MeshBasicMaterial({
-                    map: this.resources.items.extras_texture,
+                    map: this.resources.items.platforms_baked,
                 });
             }
-            if (child.name === "building_baked") {
-                this.resources.items.building_texture.flipY = false;
-                this.resources.items.building_texture.colorSpace =
+            if (child.name === "Pictures_Baked") {
+                this.resources.items.pictures_baked.flipY = false;
+                this.resources.items.pictures_baked.colorSpace =
                     THREE.SRGBColorSpace;
                 child.material = new THREE.MeshBasicMaterial({
-                    map: this.resources.items.building_texture,
+                    map: this.resources.items.pictures_baked,
+                    side: THREE.DoubleSide,
+                });
+            }
+            if (child.name === "Walls_Baked") {
+                this.resources.items.walls_baked.flipY = false;
+                this.resources.items.walls_baked.colorSpace =
+                    THREE.SRGBColorSpace;
+                child.material = new THREE.MeshBasicMaterial({
+                    map: this.resources.items.walls_baked,
+                    side: THREE.DoubleSide,
+                });
+            }
+            if (child.name === "Easter_Baked") {
+                this.resources.items.easter_baked.flipY = false;
+                this.resources.items.easter_baked.colorSpace =
+                    THREE.SRGBColorSpace;
+                child.material = new THREE.MeshBasicMaterial({
+                    map: this.resources.items.easter_baked,
                     side: THREE.DoubleSide,
                 });
             }
         });
 
-        this.scene.add(this.office);
+        this.scene.add(this.full_model_easter);
+    }
+
+    setLandscapeCollider() {
+        const collider = this.full_model_easter.getObjectByName("Octree");
+        console.log(collider);
+        this.octree.fromGraphNode(collider);
+        collider.removeFromParent();
+        collider.geometry.dispose();
+        collider.material.dispose();
     }
 }

@@ -3,50 +3,46 @@ export default [
         thirteen23: {
             assets: [
                 {
-                    name: "office",
+                    name: "full_model_easter",
                     type: "glbModel",
-                    path: "/models/office.glb",
+                    path: "/models/full_model_easter.glb",
                 },
                 {
-                    name: "outside",
-                    type: "glbModel",
-                    path: "/models/outside.glb",
-                },
-                {
-                    name: "car",
-                    type: "glbModel",
-                    path: "/models/car.glb",
-                },
-                {
-                    name: "building_texture",
+                    name: "car_baked",
                     type: "imageTexture",
-                    path: "/textures/building_texture.webp",
+                    path: "/textures/car_baked.webp",
                 },
                 {
-                    name: "extras_texture",
+                    name: "easter_baked",
                     type: "imageTexture",
-                    path: "/textures/extras_texture.webp",
+                    path: "/textures/easter_baked.webp",
                 },
                 {
-                    name: "ship_texture",
+                    name: "pictures_baked",
                     type: "imageTexture",
-                    path: "/textures/ship_texture.webp",
+                    path: "/textures/pictures_baked.webp",
                 },
                 {
-                    name: "sign_texture",
+                    name: "platforms_baked",
                     type: "imageTexture",
-                    path: "/textures/sign_texture.webp",
+                    path: "/textures/platforms_baked.webp",
                 },
                 {
-                    name: "ground_texture",
+                    name: "walls_baked",
                     type: "imageTexture",
-                    path: "/textures/ground_texture.webp",
+                    path: "/textures/walls_baked.webp",
                 },
-
                 {
-                    name: "hdrBackground",
-                    type: "hdrTexture",
-                    path: "/textures/park.hdr",
+                    name: "skyBoxTexture",
+                    type: "cubeTexture",
+                    path: [
+                        "/textures/px.png",
+                        "/textures/nx.png",
+                        "/textures/py.png",
+                        "/textures/ny.png",
+                        "/textures/pz.png",
+                        "/textures/nz.png",
+                    ],
                 },
             ],
         },

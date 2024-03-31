@@ -1,172 +1,314 @@
 import * as THREE from "three";
 import Experience from "./Experience.js";
-import GSAP from "gsap";
 
-import { ScrollTrigger } from "gsap/ScrollTrigger.js";
-import Lenis from "@studio-freight/lenis";
+import { EventEmitter } from "events";
 
-export default class Controls {
+import { Capsule } from "three/examples/jsm/math/Capsule";
+import { PositionalAudioHelper } from "three/addons/helpers/PositionalAudioHelper.js";
+
+export default class Player extends EventEmitter {
     constructor() {
+        super();
         this.experience = new Experience();
-        this.scene = this.experience.scene;
-        this.sizes = this.experience.sizes;
         this.time = this.experience.time;
         this.camera = this.experience.camera;
-        this.resources = this.experience.resources;
-        this.outside = this.experience.world.outside.outside;
-        this.activeSelection = false;
-        this.intersectObjects = [this.outside.children[1]];
-        this.originalMaterial = this.intersectObjects.material;
+        this.octree = this.experience.world.octree;
+        this.scene = this.experience.scene;
 
-        GSAP.registerPlugin(ScrollTrigger);
+        this.initPlayer();
+        this.initControls();
 
-        this.interactiveSVG = document.querySelector(".interactive-svg");
-        this.closeButton = document.querySelector(".close-button");
-        this.sideBar = document.querySelector(".side-bar");
+        this.addEventListeners();
 
-        this.currentScaleX = 0;
-        this.currentScaleY = 0;
-        this.currentRotateZ = 0;
-
-        this.targetScaleX = 0;
-        this.targetScaleY = 0;
-        this.targetRotateZ = 0;
-
-        this.setRaycaster();
-        this.setSmoothScroll();
-        this.setEventListeners();
+        this.fireawaysong();
     }
 
-    setSmoothScroll() {
-        this.lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothTouch: true,
+    fireawaysong() {
+        this.listener = new THREE.AudioListener();
+        this.experience.camera.perspectiveCamera.add(this.listener);
+        const sphere = new THREE.BoxGeometry(1, 1, 3);
+        const material = new THREE.MeshBasicMaterial({
+            transparent: true,
+            opacity: 0,
+        });
+        const mesh = new THREE.Mesh(sphere, material);
+        mesh.rotation.y = -1;
+        mesh.position.set(6.57398, 0.6, 12.7764);
+
+        const sound = new THREE.PositionalAudio(this.listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load("sounds/harry.mp3", function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setRefDistance(10);
+            sound.play();
         });
 
-        this.lenis.on("scroll", (e) => {
-            ScrollTrigger.update;
-        });
+        this.scene.add(mesh);
 
-        GSAP.ticker.add((time) => {
-            this.lenis.raf(time * 1000);
-        });
+        mesh.add(sound);
 
-        GSAP.ticker.lagSmoothing(0);
+        console.log("helloooooo");
+        console.log(sound.getRolloffFactor());
     }
 
-    setRaycaster() {
-        this.raycaster = new THREE.Raycaster();
-        this.pointer = new THREE.Vector2();
+    initPlayer() {
+        this.player = {};
+        this.player.body = this.camera.perspectiveCamera;
+
+        this.player.onFloor = false;
+        this.player.gravity = 60;
+
+        this.player.spawn = {
+            position: new THREE.Vector3(),
+            rotation: new THREE.Euler(),
+            velocity: new THREE.Vector3(),
+        };
+
+        this.player.raycaster = new THREE.Raycaster();
+        this.player.raycaster.far = 5;
+
+        this.player.height = 1.4;
+        this.player.position = new THREE.Vector3();
+        this.player.rotation = new THREE.Euler();
+        this.player.rotation.order = "YXZ";
+
+        this.player.velocity = new THREE.Vector3();
+        this.player.direction = new THREE.Vector3();
+
+        this.player.speedMultiplier = 1.5;
+
+        this.player.collider = new Capsule(
+            new THREE.Vector3(),
+            new THREE.Vector3(),
+            0.35
+        );
     }
 
-    setEventListeners() {
-        window.addEventListener("pointermove", this.onPointerMove);
-        window.addEventListener("click", this.onClick);
-
-        this.closeButton.addEventListener("click", () => {
-            GSAP.to(this.sideBar, {
-                x: "-100%",
-                ease: "power4.inOut", // Easing function
-                onComplete: () => {
-                    this.sideBar.classList.add("hidden");
-                },
-            });
-        });
+    initControls() {
+        this.actions = {};
     }
 
-    onPointerMove = (e) => {
-        this.pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
-        this.pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    onDesktopPointerMove = (e) => {
+        if (document.pointerLockElement !== document.body) return;
+        this.player.body.rotation.order = this.player.rotation.order;
 
-        this.targetScaleX = -0.18 * this.pointer.x * this.pointer.x + 0.99;
-        this.targetScaleY = -0.18 * this.pointer.y * this.pointer.y + 0.99;
-        this.targetRotateZ = this.pointer.x * 12;
+        this.player.body.rotation.x -= e.movementY / 500;
+        this.player.body.rotation.y -= e.movementX / 500;
+
+        this.player.body.rotation.x = THREE.MathUtils.clamp(
+            this.player.body.rotation.x,
+            -Math.PI / 2,
+            Math.PI / 2
+        );
     };
 
-    onClick = () => {
-        if (this.activeSelection && this.camera.controls.enablePan) {
-            this.sideBar.classList.remove("hidden");
-            this.camera.controls.enablePan = false;
-            this.camera.controls.enableRotate = false;
-            this.camera.controls.enableZoom = false;
+    onKeyDown = (e) => {
+        if (document.pointerLockElement !== document.body) return;
 
-            GSAP.to(this.sideBar, {
-                x: "0%",
-                ease: "power4.inOut", // Easing function
-            });
+        if (e.code === "KeyW") {
+            this.actions.forward = true;
+        }
+        if (e.code === "KeyS") {
+            this.actions.backward = true;
+        }
+        if (e.code === "KeyA") {
+            this.actions.left = true;
+        }
+        if (e.code === "KeyD") {
+            this.actions.right = true;
+        }
 
-            GSAP.to(this.camera.controls.target, {
-                x: 0.54,
-                y: 2.77,
-                z: -4.9,
-                duration: 2,
-                ease: "power2.out",
-            });
+        if (e.code === "ShiftLeft") {
+            this.actions.run = true;
+        }
 
-            GSAP.to(this.camera.perspectiveCamera.position, {
-                x: -23,
-                y: 2.77,
-                z: -5.73,
-                duration: 2,
-                ease: "power2.out",
-                onComplete: () => {
-                    this.camera.controls.enablePan = true;
-                    this.camera.controls.enableRotate = true;
-                    this.camera.controls.enableZoom = true;
-                },
-            });
+        if (e.code === "Space") {
+            this.actions.jump = true;
         }
     };
+
+    onKeyUp = (e) => {
+        if (document.pointerLockElement !== document.body) return;
+
+        if (e.code === "KeyW") {
+            this.actions.forward = false;
+        }
+        if (e.code === "KeyS") {
+            this.actions.backward = false;
+        }
+        if (e.code === "KeyA") {
+            this.actions.left = false;
+        }
+        if (e.code === "KeyD") {
+            this.actions.right = false;
+        }
+
+        if (e.code === "ShiftLeft") {
+            this.actions.run = false;
+        }
+
+        if (e.code === "Space") {
+            this.actions.jump = false;
+        }
+    };
+
+    onPointerDown = (e) => {
+        if (e.pointerType === "mouse") {
+            document.body.requestPointerLock();
+            return;
+        }
+    };
+
+    playerCollisions() {
+        const result = this.octree.capsuleIntersect(this.player.collider);
+        this.player.onFloor = false;
+
+        if (result) {
+            this.player.onFloor = result.normal.y > 0;
+
+            this.player.collider.translate(
+                result.normal.multiplyScalar(result.depth)
+            );
+        }
+    }
+
+    getForwardVector() {
+        this.camera.perspectiveCamera.getWorldDirection(this.player.direction);
+        this.player.direction.y = 0;
+        this.player.direction.normalize();
+
+        return this.player.direction;
+    }
+
+    getSideVector() {
+        this.camera.perspectiveCamera.getWorldDirection(this.player.direction);
+        this.player.direction.y = 0;
+        this.player.direction.normalize();
+        this.player.direction.cross(this.camera.perspectiveCamera.up);
+
+        return this.player.direction;
+    }
+
+    addEventListeners() {
+        document.addEventListener("keydown", this.onKeyDown);
+        document.addEventListener("keyup", this.onKeyUp);
+        document.addEventListener("pointermove", this.onDesktopPointerMove);
+        document.addEventListener("pointerdown", this.onPointerDown);
+    }
+
+    resize() {}
+
+    spawnPlayerOutOfBounds() {
+        const spawnPos = new THREE.Vector3(29.485, 1, -9.1);
+        this.player.velocity = this.player.spawn.velocity;
+        this.player.body.position.copy(spawnPos);
+
+        this.player.collider.start.copy(spawnPos);
+        this.player.collider.end.copy(spawnPos);
+
+        this.player.collider.end.y += this.player.height;
+    }
+
+    updateMovement() {
+        const speed =
+            (this.player.onFloor ? 1.35 : 0.2) *
+            this.player.gravity *
+            this.player.speedMultiplier;
+
+        //The amount of distance we travel between each frame
+        let speedDelta = this.time.delta * speed;
+
+        if (this.actions.run) {
+            speedDelta *= 1.6;
+        }
+        if (this.actions.forward) {
+            this.player.velocity.add(
+                this.getForwardVector().multiplyScalar(speedDelta)
+            );
+        }
+        if (this.actions.backward) {
+            this.player.velocity.add(
+                this.getForwardVector().multiplyScalar(-speedDelta * 0.5)
+            );
+        }
+        if (this.actions.left) {
+            this.player.velocity.add(
+                this.getSideVector().multiplyScalar(-speedDelta * 0.75)
+            );
+        }
+        if (this.actions.right) {
+            this.player.velocity.add(
+                this.getSideVector().multiplyScalar(speedDelta * 0.75)
+            );
+        }
+
+        if (this.player.onFloor) {
+            if (this.actions.jump) {
+                this.player.velocity.y = 10;
+            }
+        }
+
+        let damping = Math.exp(-15 * this.time.delta) - 1;
+
+        if (!this.player.onFloor) {
+            this.player.velocity.y -= this.player.gravity * this.time.delta;
+            damping *= 0.1;
+        }
+
+        this.player.velocity.addScaledVector(this.player.velocity, damping);
+
+        const deltaPosition = this.player.velocity
+            .clone()
+            .multiplyScalar(this.time.delta);
+
+        this.player.collider.translate(deltaPosition);
+        this.playerCollisions();
+
+        this.player.body.position.copy(this.player.collider.end);
+        this.player.body.updateMatrixWorld();
+
+        if (this.player.body.position.y < -20) {
+            this.spawnPlayerOutOfBounds();
+        }
+    }
+
+    setInteractionObjects(interactionObjects) {
+        this.player.interactionObjects = interactionObjects;
+    }
+
+    getgetCameraLookAtDirectionalVector() {
+        const direction = new THREE.Vector3(0, 0, -1);
+        return direction.applyQuaternion(
+            this.camera.perspectiveCamera.quaternion
+        );
+    }
+
+    updateRaycaster() {
+        this.player.raycaster.ray.origin.copy(
+            this.camera.perspectiveCamera.position
+        );
+
+        this.player.raycaster.ray.direction.copy(
+            this.getgetCameraLookAtDirectionalVector()
+        );
+
+        const intersects = this.player.raycaster.intersectObjects(
+            this.player.interactionObjects.children
+        );
+
+        if (intersects.length === 0) {
+            this.currentIntersectObject = "";
+        } else {
+            this.currentIntersectObject = intersects[0].object.name;
+        }
+
+        if (this.currentIntersectObject !== this.previousIntersectObject) {
+            this.previousIntersectObject = this.currentIntersectObject;
+            this.emit("updateMessage", this.previousIntersectObject);
+        }
+    }
 
     update() {
-        if (this.interactiveSVG) {
-            let setScaleX = GSAP.utils.interpolate(
-                this.currentScaleX,
-                this.targetScaleX,
-                0.02
-            );
-            let setScaleY = GSAP.utils.interpolate(
-                this.currentScaleY,
-                this.targetScaleY,
-                0.02
-            );
-            let setRotateZ = GSAP.utils.interpolate(
-                this.currentRotateZ,
-                this.targetRotateZ,
-                0.02
-            );
-
-            this.interactiveSVG.style.transform = `scale3d(${setScaleX}, ${setScaleY}, 1) rotateZ(${setRotateZ}deg)`;
-
-            this.currentScaleX = setScaleX;
-            this.currentScaleY = setScaleY;
-            this.currentRotateZ = setRotateZ;
-        }
-
-        //raycaster
-        this.raycaster.setFromCamera(
-            this.pointer,
-            this.camera.perspectiveCamera
-        );
-
-        const intersects = this.raycaster.intersectObjects(
-            this.intersectObjects
-        );
-
-        if (intersects.length) {
-            if (!this.activeSelection) {
-                document.body.style.cursor = "pointer";
-            }
-
-            this.activeSelection = intersects[0];
-            this.activeSelection.object.material.color.set(0x1eda44);
-        } else {
-            if (this.activeSelection) {
-                document.body.style.cursor = "auto";
-                this.activeSelection.object.material.color.set(0xffffff);
-            }
-            this.activeSelection = null;
-        }
+        this.updateMovement();
     }
 }

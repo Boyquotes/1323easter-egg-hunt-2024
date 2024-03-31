@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import Experience from "./Experience.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { PositionalAudioHelper } from "three/addons/helpers/PositionalAudioHelper.js";
 
 export default class Camera {
     constructor() {
@@ -9,14 +10,14 @@ export default class Camera {
         this.scene = this.experience.scene;
         this.canvas = this.experience.canvas;
         this.params = {
-            fov: 45,
+            fov: 75,
             aspect: this.sizes.aspect,
             near: 0.001,
             far: 1000,
         };
 
         this.setPerspectiveCamera();
-        this.setOrbitControls();
+        // this.setOrbitControls();
     }
 
     setPerspectiveCamera() {
@@ -28,7 +29,8 @@ export default class Camera {
         );
         this.scene.add(this.perspectiveCamera);
 
-        this.perspectiveCamera.position.set(-72, 15.4, 59.41);
+        this.perspectiveCamera.position.set(29.485, 1, -9.1);
+        this.perspectiveCamera.rotation.y = Math.PI / 2;
     }
 
     setOrbitControls() {
