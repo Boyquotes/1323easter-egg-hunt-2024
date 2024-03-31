@@ -16,7 +16,6 @@ export default class Office {
         this.full_model_easter = this.resources.items.full_model_easter.scene;
 
         this.full_model_easter.traverse((child) => {
-            console.log(child);
             if (child.name === "Red_Glass") {
                 child.material = new THREE.MeshPhysicalMaterial({});
                 child.material.roughness = 0;
@@ -85,7 +84,6 @@ export default class Office {
 
     setLandscapeCollider() {
         const collider = this.full_model_easter.getObjectByName("Octree");
-        console.log(collider);
         this.octree.fromGraphNode(collider);
         collider.removeFromParent();
         collider.geometry.dispose();

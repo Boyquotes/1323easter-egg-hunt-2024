@@ -20,6 +20,10 @@ export default class Player extends EventEmitter {
 
         this.addEventListeners();
 
+        this.flag = false;
+
+        document.querySelector(".preloader").remove();
+
         this.fireawaysong();
     }
 
@@ -40,15 +44,18 @@ export default class Player extends EventEmitter {
         audioLoader.load("sounds/harry.mp3", function (buffer) {
             sound.setBuffer(buffer);
             sound.setRefDistance(10);
-            sound.play();
+        });
+
+        window.addEventListener("click", () => {
+            if (!this.flag) {
+                sound.play();
+                this.flag = true;
+            }
         });
 
         this.scene.add(mesh);
 
         mesh.add(sound);
-
-        console.log("helloooooo");
-        console.log(sound.getRolloffFactor());
     }
 
     initPlayer() {
