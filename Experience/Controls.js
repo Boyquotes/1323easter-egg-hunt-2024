@@ -22,8 +22,6 @@ export default class Player extends EventEmitter {
 
         this.flag = false;
 
-        document.querySelector(".preloader").remove();
-
         this.fireawaysong();
     }
 
@@ -44,6 +42,7 @@ export default class Player extends EventEmitter {
         audioLoader.load("sounds/harry.mp3", function (buffer) {
             sound.setBuffer(buffer);
             sound.setRefDistance(10);
+            document.querySelector(".preloader").remove();
         });
 
         window.addEventListener("click", () => {
